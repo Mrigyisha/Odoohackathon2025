@@ -11,8 +11,4 @@ This project is a modern web application built using a powerful front-end stack 
 - **Vite** – Blazing fast build tool and development server
 - **TypeScript** – Static typing for better code quality
 - **React** – Component-based UI library
-<<<<<<< HEAD
-- **shadcn-ui** – Modern, customizable UI components
-=======
->>>>>>> d2070a2 (Login & Signup frontend is completed)
 - **Tailwind CSS** – Utility-first CSS framework for rapid styling
