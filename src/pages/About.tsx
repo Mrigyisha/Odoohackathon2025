@@ -1,11 +1,14 @@
+// src/pages/About.jsx
+
 import { useState } from "react";
-import { Heart, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import * as Accordion from "@radix-ui/react-accordion";
 import Navbar from "@/components/Navbar";
+import axios from "axios";
 
 const faqs = [
   {
@@ -31,11 +34,44 @@ const faqs = [
 ];
 
 const About = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus("");
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/contact", formData);
+      if (response.data.success) {
+        setStatus("Message sent successfully!");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setStatus("Failed to send message.");
+      }
+    } catch (error) {
+      console.error("Client error:", error.message);
+      setStatus("Failed to send message.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pt-20 pb-12">
-        <Navbar />
+      <Navbar />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        {/* About Section */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-foreground">About ReVibe</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -72,18 +108,37 @@ const About = () => {
         {/* Contact Section */}
         <Card className="p-6 shadow-soft space-y-6">
           <h2 className="text-2xl font-semibold text-foreground text-center">Get in Touch</h2>
-          <form className="space-y-4 max-w-xl mx-auto">
-            <Input placeholder="Your name" required />
-            <Input type="email" placeholder="Your email" required />
-            <Textarea placeholder="Your message..." rows={4} required />
-            <Button type="submit" className="w-full">
+          <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto">
+            <Input
+              name="name"
+              placeholder="Your name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              type="email"
+              name="email"
+              placeholder="Your email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <Textarea
+              name="message"
+              placeholder="Your message..."
+              rows={4}
+              value={formData.message}
+              onChange={handleChange}
+              required
+            />
+            <Button type="submit" className="w-full" disabled={loading}>
               <Mail className="mr-2 h-4 w-4" />
-              Send Message
+              {loading ? "Sending..." : "Send Message"}
             </Button>
+            {status && <p className="text-sm text-center text-muted-foreground">{status}</p>}
           </form>
         </Card>
-
-       
       </div>
     </div>
   );
