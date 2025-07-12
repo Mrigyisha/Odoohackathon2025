@@ -24,7 +24,7 @@ import { collection, getDocs, query, where } from "firebase/firestore"
 type Item = {
   id: string;
   title: string;
-  image?: string;
+  imagePreviews?: string[]; 
   uploader: string;
   condition: string;
   points: number;
@@ -269,7 +269,7 @@ const Browse = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-6">
                       <img
-                        src={item.image}
+                        src={item.imagePreviews?.[0]}
                         alt={item.title}
                         className="w-24 h-24 object-cover rounded-lg"
                       />

@@ -74,11 +74,17 @@ const Admin = () => {
     fetchItems();
   }, []);
 
-  const handleApprove = async (itemId: string) => {
-    const itemRef = doc(db, "items", itemId);
+  const handleApprove = async (id: string) => {
+  try {
+    const itemRef = doc(db, "items", id);
     await updateDoc(itemRef, { isApproved: true, status: "available" });
-    fetchItems();
-  };
+    await fetchItems(); // await here to ensure state refresh after update
+  } catch (error) {
+    console.error("Approve failed:", error);
+    alert("Failed to approve item. See console for details.");
+  }
+};
+
 
   const handleReject = async (itemId: string) => {
     const itemRef = doc(db, "items", itemId);
@@ -107,7 +113,7 @@ const Admin = () => {
       <CardContent className="p-4">
         <div className="flex items-start space-x-4">
           <img
-            src={item.image || "/placeholder.png"}
+            src={item.imagePreviews?.[0]}
             alt={item.title}
             className="w-16 h-16 object-cover rounded-lg"
           />
