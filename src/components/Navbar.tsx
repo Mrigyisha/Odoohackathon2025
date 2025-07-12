@@ -29,7 +29,7 @@ const Navbar = () => {
             <a href="#how-it-works" className="text-foreground hover:text-primary transition-colors">
               How It Works
             </a>
-            <a href="#about" className="text-foreground hover:text-primary transition-colors">
+            <a href="/about" className="text-foreground hover:text-primary transition-colors">
               About
             </a>
           </div>
@@ -43,7 +43,7 @@ const Navbar = () => {
               </Link>
             </Button>
             <Button variant="hero" asChild>
-              <Link to="/signup">Start Swapping</Link>
+              <Link to="/signup">Signup</Link>
             </Button>
           </div>
 
@@ -69,10 +69,10 @@ const Navbar = () => {
               <Link to="/browse" className="text-foreground hover:text-primary transition-colors">
                 Browse
               </Link>
-              <a href="#how-it-works" className="text-foreground hover:text-primary transition-colors">
+              <a href="/#how-it-works" className="text-foreground hover:text-primary transition-colors">
                 How It Works
               </a>
-              <a href="#about" className="text-foreground hover:text-primary transition-colors">
+              <a href="/about" className="text-foreground hover:text-primary transition-colors">
                 About
               </a>
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
@@ -83,7 +83,7 @@ const Navbar = () => {
                   </Link>
                 </Button>
                 <Button variant="hero" asChild>
-                  <Link to="/signup">Start Swapping</Link>
+                  <Link to="/signup">Signup</Link>
                 </Button>
               </div>
             </div>

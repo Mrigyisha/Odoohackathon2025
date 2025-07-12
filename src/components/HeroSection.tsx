@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, RefreshCw, Heart } from "lucide-react";
 import heroImage from "@/assets/hero-clothing.jpg";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   return (
@@ -38,13 +39,17 @@ const HeroSection = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="xl" className="group">
+              <Button variant="hero" size="xl" className="group" asChild>
+                <Link to="/signup">
                 Start Swapping
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </Button>
-              <Button variant="soft" size="xl">
-                <Heart className="mr-2 h-5 w-5" />
-                Browse Items
+              <Button variant="soft" size="xl" asChild>
+                <Link to="/browse">
+                  <Heart className="mr-2 h-5 w-5" />
+                  Browse Items
+                </Link>
               </Button>
             </div>
 
