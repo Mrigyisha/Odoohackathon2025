@@ -34,7 +34,7 @@ const HowItWorks = () => {
         {/* Header */}
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            How ReWear Works
+            How ReVibe Works
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Join the sustainable fashion revolution in four simple steps. 
@@ -91,7 +91,7 @@ const HowItWorks = () => {
           </h3>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:shadow-glow transform hover:scale-105 transition-all duration-300">
-              Join ReWear Today
+              Join ReVibe Today
             </button>
             <button className="bg-card text-foreground border border-border px-8 py-3 rounded-lg font-medium hover:bg-accent transition-colors duration-300">
               Learn More

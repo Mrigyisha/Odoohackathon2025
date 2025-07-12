@@ -11,11 +11,11 @@ const HeroSection = () => {
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                Give Your Clothes
-                <span className="block text-primary">A Second Life</span>
+                Smart swaps.
+                <span className="block text-primary">Timeless style.</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-lg">
-                Join ReWear's sustainable fashion community. Exchange, swap, and discover 
+                Join ReVibe's sustainable fashion community. Exchange, swap, and discover
                 amazing preloved clothing while reducing textile waste.
               </p>
             </div>

@@ -15,7 +15,7 @@ const Navbar = () => {
             <div className="bg-gradient-to-r from-primary to-primary-glow p-2 rounded-lg">
               <Recycle className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">ReWear</span>
+            <span className="text-xl font-bold text-foreground">ReVibe</span>
           </div>
 
           {/* Desktop Navigation */}

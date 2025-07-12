@@ -11,7 +11,7 @@ const Footer = () => {
               <div className="bg-gradient-to-r from-primary to-primary-glow p-2 rounded-lg">
                 <Recycle className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">ReWear</span>
+              <span className="text-xl font-bold text-foreground">ReVibe</span>
             </div>
             <p className="text-muted-foreground text-sm">
               Transforming fashion consumption through community-driven clothing exchange. 
@@ -67,7 +67,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            © 2024 ReWear. All rights reserved.
+            © 2025 ReVibe. All rights reserved.
           </p>
           <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-4 md:mt-0">
             <span>Made with</span>
