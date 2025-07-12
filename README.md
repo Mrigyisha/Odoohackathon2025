@@ -1,14 +1,18 @@
-# Problem Statement 3: ReWear – Community Clothing Exchange
+# 👕 ReWear – Community Clothing Exchange
 
-# Welcome to the Project
+ReVibe is a modern web app that empowers users to exchange clothes sustainably through a community-driven platform.
 
-## Project Overview
+## 🚀 Project Overview
 
-This project is a modern web application built using a powerful front-end stack to ensure a fast, responsive, and developer-friendly experience.
+This is a fast, responsive, and accessible clothing exchange platform built with modern frontend tools. Users can browse, share, and exchange items in real-time.
 
 ## 🛠 Tech Stack
 
-- **Vite** – Blazing fast build tool and development server
-- **TypeScript** – Static typing for better code quality
-- **React** – Component-based UI library
-- **Tailwind CSS** – Utility-first CSS framework for rapid styling
+- **React + TypeScript** – Component-based UI with static typing  
+- **Vite** – Lightning-fast dev server and bundler  
+- **Tailwind CSS** – Utility-first styling framework  
+- **ShadCN + Radix UI** – Beautiful, accessible components  
+- **React Router** – Declarative client-side routing  
+- **React Hook Form + Zod** – Form management with validation  
+- **Firebase** – Authentication and real-time backend  
+- **React Query** – Async state management
