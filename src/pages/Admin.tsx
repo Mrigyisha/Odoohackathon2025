@@ -30,7 +30,7 @@ import {
 import { auth } from "@/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-const gmail = [import.meta.env.VITE_ADMIN_EMAIL];
+const gmail = import.meta.env.VITE_ADMIN_EMAIL;
 
 
 
@@ -43,9 +43,9 @@ const Admin = () => {
       if (user) {
         setCurrentUser(user);
         
-        const allowedAdmins = [gmail??""];
+        const allowedAdmins = [gmail];
 
-        if (!allowedAdmins.includes(user.email||"")) {
+        if (!allowedAdmins.includes(user.email)) {
           alert("Access denied. Admins only.");
           navigate("/"); // redirect to homepage
         }
