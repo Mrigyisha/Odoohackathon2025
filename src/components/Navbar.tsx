@@ -2,9 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Recycle, User, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/config";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user] = useAuthState(auth);
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -36,21 +40,39 @@ const Navbar = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link to="/login">
-                <User className="mr-2 h-4 w-4" />
-                Login
-              </Link>
-            </Button>
-            <Button variant="hero" asChild>
-              <Link to="/signup">Signup</Link>
-            </Button>
+            {user ? (
+              <>
+                <Link to="/dashboard">
+                  <Avatar className="w-9 h-9 ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer rounded-full">
+                    <AvatarImage src={user.photoURL || ""} />
+                    <AvatarFallback>
+                      <User className="w-4 h-4 text-muted-foreground" />
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+                <Button variant="ghost" onClick={() => auth.signOut()}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link to="/login">
+                    <User className="mr-2 h-4 w-4" />
+                    Login
+                  </Link>
+                </Button>
+                <Button variant="hero" asChild>
+                  <Link to="/signup">Signup</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -75,16 +97,36 @@ const Navbar = () => {
               <a href="/about" className="text-foreground hover:text-primary transition-colors">
                 About
               </a>
+
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                <Button variant="ghost" className="justify-start" asChild>
-                  <Link to="/login">
-                    <User className="mr-2 h-4 w-4" />
-                    Login
-                  </Link>
-                </Button>
-                <Button variant="hero" asChild>
-                  <Link to="/signup">Signup</Link>
-                </Button>
+                {user ? (
+                  <>
+                    <Link to="/dashboard" className="flex items-center space-x-2">
+                      <Avatar className="w-9 h-9 ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer rounded-full">
+                        <AvatarImage src={user.photoURL || ""} />
+                        <AvatarFallback>
+                          <User className="w-4 h-4 text-muted-foreground" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm text-foreground truncate">{user.email}</span>
+                    </Link>
+                    <Button variant="outline" onClick={() => auth.signOut()}>
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="ghost" className="justify-start" asChild>
+                      <Link to="/login">
+                        <User className="mr-2 h-4 w-4" />
+                        Login
+                      </Link>
+                    </Button>
+                    <Button variant="hero" asChild>
+                      <Link to="/signup">Start Swapping</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
