@@ -178,7 +178,7 @@ const Admin = () => {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage and moderate the ReWear platform</p>
+            <p className="text-muted-foreground">Manage and moderate the ReVibe platform</p>
           </div>
 
           {/* Stats Cards */}

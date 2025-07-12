@@ -33,7 +33,7 @@ const Signup = () => {
             <div className="bg-gradient-to-r from-primary to-primary-glow p-2 rounded-lg">
               <Recycle className="h-8 w-8 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold text-foreground">ReWear</span>
+            <span className="text-2xl font-bold text-foreground">ReVibe</span>
           </div>
           <p className="text-muted-foreground">Join the sustainable fashion revolution</p>
         </div>
@@ -53,7 +53,7 @@ const Signup = () => {
                   <Label htmlFor="firstName">First Name</Label>
                   <Input
                     id="firstName"
-                    placeholder="John"
+                    placeholder="Jane"
                     value={formData.firstName}
                     onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                     className="transition-all duration-300 focus:shadow-soft"
@@ -169,14 +169,9 @@ const Signup = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full">
-                Google
-              </Button>
-              <Button variant="outline" className="w-full">
-                Facebook
-              </Button>
-            </div>
+            <Button variant="outline" className="w-full">
+              Google
+            </Button>
 
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}

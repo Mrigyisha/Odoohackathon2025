@@ -28,7 +28,7 @@ const Login = () => {
             <div className="bg-gradient-to-r from-primary to-primary-glow p-2 rounded-lg">
               <Recycle className="h-8 w-8 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold text-foreground">ReWear</span>
+            <span className="text-2xl font-bold text-foreground">ReVibe</span>
           </div>
           <p className="text-muted-foreground">Welcome back to sustainable fashion</p>
         </div>
@@ -104,14 +104,9 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full">
-                Google
-              </Button>
-              <Button variant="outline" className="w-full">
-                Facebook
-              </Button>
-            </div>
+            <Button variant="outline" className="w-full">
+              Google
+            </Button>
 
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
