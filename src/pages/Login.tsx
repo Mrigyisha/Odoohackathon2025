@@ -61,8 +61,6 @@ const Login = () => {
 
       if (!userSnap.exists()) {
         await setDoc(doc(db, "users", user.uid), {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
           email: formData.email,
           uid: user.uid,
           points: 0,

@@ -1,43 +1,73 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { uploadToImgBB } from "@/lib/uploadToImgBB";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Upload, X, Plus, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+
+// Firebase
+import { db, auth } from "@/firebase/config";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 const AddItem = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "",
-    type: "",
+    type: "swap",
     size: "",
     condition: "",
     points: "",
     tags: [] as string[],
-    currentTag: ""
+    currentTag: "",
   });
-  
+
   const [images, setImages] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const categories = [
-    "Tops", "Bottoms", "Dresses", "Outerwear", "Shoes", 
-    "Accessories", "Bags", "Jewelry", "Activewear", "Formal"
+    "Tops",
+    "Bottoms",
+    "Dresses",
+    "Outerwear",
+    "Shoes",
+    "Accessories",
+    "Bags",
+    "Jewelry",
+    "Activewear",
+    "Formal",
   ];
-
-  const conditions = [
-    "Like New", "Excellent", "Good", "Fair"
-  ];
-
-  const sizes = [
-    "XS", "S", "M", "L", "XL", "XXL", "One Size"
-  ];
+  const sizes = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
+  const conditions = ["Like New", "Excellent", "Good", "Fair"];
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -53,30 +83,30 @@ const AddItem = () => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const newFiles = Array.from(e.dataTransfer.files);
-      setImages(prev => [...prev, ...newFiles].slice(0, 5));
+      setImages((prev) => [...prev, ...newFiles].slice(0, 5));
     }
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setImages(prev => [...prev, ...newFiles].slice(0, 5));
+      setImages((prev) => [...prev, ...newFiles].slice(0, 5));
     }
   };
 
   const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const addTag = () => {
-    if (formData.currentTag.trim() && !formData.tags.includes(formData.currentTag.trim())) {
+    const trimmed = formData.currentTag.trim();
+    if (trimmed && !formData.tags.includes(trimmed)) {
       setFormData({
         ...formData,
-        tags: [...formData.tags, formData.currentTag.trim()],
-        currentTag: ""
+        tags: [...formData.tags, trimmed],
+        currentTag: "",
       });
     }
   };
@@ -84,20 +114,56 @@ const AddItem = () => {
   const removeTag = (tagToRemove: string) => {
     setFormData({
       ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove)
+      tags: formData.tags.filter((tag) => tag !== tagToRemove),
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", { ...formData, images });
-    // Handle form submission
-  };
+    if (!currentUser) {
+      alert("Please log in to list an item.");
+      return;
+    }
+
+  try {
+    // Step 1: Upload all images to ImgBB and get URLs
+    const uploadedUrls = await Promise.all(
+      images.map(async (file) => await uploadToImgBB(file))
+    );
+
+    // Step 2: Construct item data
+    const itemData = {
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      type: formData.type || "swap",
+      size: formData.size,
+      condition: formData.condition,
+      points: formData.points ? parseInt(formData.points) : null,
+      tags: formData.tags,
+      status: "pending", // Awaiting admin approval
+      isApproved: false,
+      uploader: currentUser.displayName || currentUser.email,
+      uploaderId: currentUser.uid,
+      createdAt: Timestamp.now(),
+      likes: 0,
+      views: 0,
+      imagePreviews: uploadedUrls, // Actual URLs from ImgBB
+    };
+
+    // Step 3: Save to Firestore
+    await addDoc(collection(db, "items"), itemData);
+    alert("Item submitted for admin review!");
+    navigate("/dashboard");
+  } catch (error: any) {
+    console.error("Error adding item:", error.message);
+    alert("Failed to list item.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
       <div className="pt-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
@@ -109,8 +175,12 @@ const AddItem = () => {
                 </Link>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">List New Item</h1>
-                <p className="text-muted-foreground">Add a clothing item to start swapping</p>
+                <h1 className="text-3xl font-bold text-foreground">
+                  List New Item
+                </h1>
+                <p className="text-muted-foreground">
+                  Add a clothing item to start swapping
+                </p>
               </div>
             </div>
           </div>
@@ -127,8 +197,8 @@ const AddItem = () => {
               <CardContent>
                 <div
                   className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-                    dragActive 
-                      ? "border-primary bg-primary/5" 
+                    dragActive
+                      ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50"
                   }`}
                   onDragEnter={handleDrag}
@@ -168,7 +238,9 @@ const AddItem = () => {
                           className="w-full h-24 object-cover rounded-lg"
                         />
                         {index === 0 && (
-                          <Badge className="absolute top-1 left-1 text-xs">Main</Badge>
+                          <Badge className="absolute top-1 left-1 text-xs">
+                            Main
+                          </Badge>
                         )}
                         <Button
                           type="button"
@@ -201,7 +273,9 @@ const AddItem = () => {
                     id="title"
                     placeholder="e.g., Vintage Denim Jacket"
                     value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -210,10 +284,12 @@ const AddItem = () => {
                   <Label htmlFor="description">Description *</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe your item in detail - condition, fit, styling tips, etc."
+                    placeholder="Describe your item..."
                     className="min-h-[100px]"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -221,28 +297,35 @@ const AddItem = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label>Category *</Label>
-                    <Select onValueChange={(value) => setFormData({...formData, category: value})}>
+                    <Select
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, category: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map(category => (
-                          <SelectItem key={category} value={category.toLowerCase()}>
-                            {category}
+                        {categories.map((cat) => (
+                          <SelectItem key={cat} value={cat.toLowerCase()}>
+                            {cat}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-
                   <div className="space-y-2">
                     <Label>Size *</Label>
-                    <Select onValueChange={(value) => setFormData({...formData, size: value})}>
+                    <Select
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, size: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select size" />
                       </SelectTrigger>
                       <SelectContent>
-                        {sizes.map(size => (
+                        {sizes.map((size) => (
                           <SelectItem key={size} value={size.toLowerCase()}>
                             {size}
                           </SelectItem>
@@ -255,13 +338,20 @@ const AddItem = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label>Condition *</Label>
-                    <Select onValueChange={(value) => setFormData({...formData, condition: value})}>
+                    <Select
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, condition: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select condition" />
                       </SelectTrigger>
                       <SelectContent>
-                        {conditions.map(condition => (
-                          <SelectItem key={condition} value={condition.toLowerCase()}>
+                        {conditions.map((condition) => (
+                          <SelectItem
+                            key={condition}
+                            value={condition.toLowerCase()}
+                          >
                             {condition}
                           </SelectItem>
                         ))}
@@ -276,7 +366,12 @@ const AddItem = () => {
                       type="number"
                       placeholder="25"
                       value={formData.points}
-                      onChange={(e) => setFormData({...formData, points: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          points: e.target.value,
+                        })
+                      }
                     />
                     <p className="text-xs text-muted-foreground">
                       Leave empty for swap-only item
@@ -288,8 +383,13 @@ const AddItem = () => {
                 <div className="space-y-2">
                   <Label>Tags</Label>
                   <div className="flex flex-wrap gap-2 mb-2">
-                    {formData.tags.map(tag => (
-                      <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={() => removeTag(tag)}>
+                    {formData.tags.map((tag) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="cursor-pointer"
+                        onClick={() => removeTag(tag)}
+                      >
                         {tag}
                         <X className="h-3 w-3 ml-1" />
                       </Badge>
@@ -299,16 +399,28 @@ const AddItem = () => {
                     <Input
                       placeholder="Add a tag..."
                       value={formData.currentTag}
-                      onChange={(e) => setFormData({...formData, currentTag: e.target.value})}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          currentTag: e.target.value,
+                        })
+                      }
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addTag();
+                        }
+                      }}
                     />
-                    <Button type="button" variant="outline" size="icon" onClick={addTag}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={addTag}
+                    >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Add tags like "vintage", "summer", "casual" to help others find your item
-                  </p>
                 </div>
               </CardContent>
             </Card>

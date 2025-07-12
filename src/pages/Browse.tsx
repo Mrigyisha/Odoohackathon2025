@@ -63,7 +63,7 @@ const Browse = () => {
         category: data.category ?? "Misc",
         size: data.size ?? "One Size",
         likes: data.likes ?? 0,
-        image: data.image, 
+        image: data.imagePreviews?.[0] ,
         location: data.location ?? "",
         uploadDate: data.uploadDate ?? ""
       };
