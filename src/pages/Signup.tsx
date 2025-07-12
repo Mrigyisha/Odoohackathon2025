@@ -19,7 +19,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -57,6 +57,10 @@ const Signup = () => {
         lastName: formData.lastName,
         email: formData.email,
         uid: user.uid,
+        points: 0,
+        totalswaps: 0,
+        itemslisted: 0,
+        avatar: "", // optional, for fallback
         createdAt: new Date(),
       });
 
@@ -75,22 +79,31 @@ const Signup = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      await setDoc(doc(db, "users", user.uid), {
-        firstName: user.displayName?.split(" ")[0] || "",
-        lastName: user.displayName?.split(" ")[1] || "",
-        email: user.email,
-        uid: user.uid,
-        createdAt: new Date(),
-      });
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
 
-      console.log("Google login successful:", user);
-      alert("Logged in with Google!");
-      navigate("/"); // ✅ Redirect after Google login
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          firstName: user.displayName?.split(" ")[0] || "",
+          lastName: user.displayName?.split(" ")[1] || "",
+          email: user.email,
+          uid: user.uid,
+          points: 0,
+          totalswaps: 0,
+          itemslisted: 0,
+          avatar: user.photoURL || "",
+          createdAt: new Date(),
+        });
+      }
+
+      alert("Logged in successfully!");
+      navigate("/");
     } catch (error: any) {
-      console.error("Google Sign-in Error:", error.message);
+      console.error("Google login error:", error.message);
       alert(error.message);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">

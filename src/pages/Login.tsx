@@ -60,23 +60,27 @@ const Login = () => {
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          firstName: user.displayName?.split(" ")[0] || "",
-          lastName: user.displayName?.split(" ")[1] || "",
-          email: user.email,
+        await setDoc(doc(db, "users", user.uid), {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
           uid: user.uid,
-          createdAt: new Date()
+          points: 0,
+          totalswaps: 0,
+          itemslisted: 0,
+          avatar: "", // optional, for fallback
+          createdAt: new Date(),
         });
       }
 
-      console.log("Google login successful:", user);
-      alert("Logged in with Google!");
-      navigate("/"); // ✅ Redirect to home
+      alert("Logged in successfully!");
+      navigate("/");
     } catch (error: any) {
       console.error("Google login error:", error.message);
       alert(error.message);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
