@@ -2,31 +2,42 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { 
-  ArrowLeft, 
-  Heart, 
-  Share2, 
-  Star, 
-  RefreshCw, 
-  MapPin, 
+import {
+  ArrowLeft,
+  Heart,
+  Share2,
+  Star,
+  RefreshCw,
+  MapPin,
   Calendar,
   Shield,
   MessageCircle,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import featuredItem1 from "@/assets/featured-item-1.jpg";
 import featuredItem2 from "@/assets/featured-item-2.jpg";
 import featuredItem3 from "@/assets/featured-item-3.jpg";
+import ChatWindow from "@/components/ChatWindow";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { db, auth } from "@/firebase/config"; 
 
 const ItemDetail = () => {
   const { id } = useParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [user] = useAuthState(auth);
 
   // Mock item data - in real app, this would be fetched based on ID
   const item = {
@@ -39,7 +50,7 @@ const ItemDetail = () => {
       joinDate: "March 2024",
       totalSwaps: 23,
       rating: 4.8,
-      location: "New York, NY"
+      location: "New York, NY",
     },
     condition: "Excellent",
     points: 45,
@@ -50,27 +61,28 @@ const ItemDetail = () => {
     likes: 23,
     views: 156,
     uploadDate: "2 days ago",
-    description: "This vintage Levi's denim jacket is a true classic! It's been well-maintained and has that perfect worn-in feel. Features include classic button closure, chest pockets, and timeless styling. Great for layering or wearing on its own. The jacket has some beautiful natural fading that adds to its character.",
+    description:
+      "This vintage Levi's denim jacket is a true classic! It's been well-maintained and has that perfect worn-in feel. Features include classic button closure, chest pockets, and timeless styling. Great for layering or wearing on its own. The jacket has some beautiful natural fading that adds to its character.",
     tags: ["vintage", "denim", "classic", "spring", "layering"],
     measurements: {
       chest: "20 inches",
       length: "24 inches",
-      shoulders: "18 inches"
+      shoulders: "18 inches",
     },
     material: "100% Cotton",
     careInstructions: "Machine wash cold, hang dry",
     availability: "available", // available, pending, swapped
-    swapPreferences: ["Similar outerwear", "Dresses size S/M", "Accessories"]
+    swapPreferences: ["Similar outerwear", "Dresses size S/M", "Accessories"],
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => 
+    setCurrentImageIndex((prev) =>
       prev === item.images.length - 1 ? 0 : prev + 1
     );
   };
 
   const previousImage = () => {
-    setCurrentImageIndex((prev) => 
+    setCurrentImageIndex((prev) =>
       prev === 0 ? item.images.length - 1 : prev - 1
     );
   };
@@ -78,7 +90,7 @@ const ItemDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Back Button */}
@@ -95,12 +107,12 @@ const ItemDetail = () => {
             {/* Image Gallery */}
             <div className="space-y-4">
               <div className="relative aspect-square rounded-xl overflow-hidden bg-muted">
-                <img 
-                  src={item.images[currentImageIndex]} 
+                <img
+                  src={item.images[currentImageIndex]}
                   alt={`${item.title} - Image ${currentImageIndex + 1}`}
                   className="w-full h-full object-cover"
                 />
-                
+
                 {item.images.length > 1 && (
                   <>
                     <Button
@@ -129,7 +141,11 @@ const ItemDetail = () => {
                     className="bg-background/80 backdrop-blur-sm"
                     onClick={() => setIsLiked(!isLiked)}
                   >
-                    <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                    <Heart
+                      className={`h-4 w-4 ${
+                        isLiked ? "fill-red-500 text-red-500" : ""
+                      }`}
+                    />
                   </Button>
                   <Button
                     variant="secondary"
@@ -149,13 +165,13 @@ const ItemDetail = () => {
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
                       className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        index === currentImageIndex 
-                          ? 'border-primary' 
-                          : 'border-transparent opacity-70 hover:opacity-100'
+                        index === currentImageIndex
+                          ? "border-primary"
+                          : "border-transparent opacity-70 hover:opacity-100"
                       }`}
                     >
-                      <img 
-                        src={image} 
+                      <img
+                        src={image}
                         alt={`Thumbnail ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -171,7 +187,9 @@ const ItemDetail = () => {
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h1 className="text-3xl font-bold text-foreground">{item.title}</h1>
+                    <h1 className="text-3xl font-bold text-foreground">
+                      {item.title}
+                    </h1>
                     <p className="text-muted-foreground mt-1">
                       Posted {item.uploadDate} • {item.views} views
                     </p>
@@ -189,11 +207,15 @@ const ItemDetail = () => {
                 </div>
 
                 {/* Status Badge */}
-                <Badge 
-                  variant={item.availability === 'available' ? 'default' : 'secondary'}
+                <Badge
+                  variant={
+                    item.availability === "available" ? "default" : "secondary"
+                  }
                   className="text-sm"
                 >
-                  {item.availability === 'available' ? 'Available for Swap' : 'Not Available'}
+                  {item.availability === "available"
+                    ? "Available for Swap"
+                    : "Not Available"}
                 </Badge>
 
                 {/* Quick Details */}
@@ -218,13 +240,23 @@ const ItemDetail = () => {
               </div>
 
               {/* Action Buttons */}
-              {item.availability === 'available' && (
+              {item.availability === "available" && (
                 <div className="flex space-x-4">
                   <Button variant="hero" className="flex-1" size="lg">
                     <RefreshCw className="mr-2 h-5 w-5" />
                     Request Swap
                   </Button>
-                  <Button variant="outline" size="lg">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => {
+                      if (user) {
+                        setShowChat(true);
+                      } else {
+                        alert("Please log in to start chatting.");
+                      }
+                    }}
+                  >
                     <MessageCircle className="mr-2 h-5 w-5" />
                     Message
                   </Button>
@@ -267,15 +299,23 @@ const ItemDetail = () => {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Chest:</span>
-                        <span className="ml-1 font-medium">{item.measurements.chest}</span>
+                        <span className="ml-1 font-medium">
+                          {item.measurements.chest}
+                        </span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Length:</span>
-                        <span className="ml-1 font-medium">{item.measurements.length}</span>
+                        <span className="ml-1 font-medium">
+                          {item.measurements.length}
+                        </span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Shoulders:</span>
-                        <span className="ml-1 font-medium">{item.measurements.shoulders}</span>
+                        <span className="text-muted-foreground">
+                          Shoulders:
+                        </span>
+                        <span className="ml-1 font-medium">
+                          {item.measurements.shoulders}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -283,8 +323,12 @@ const ItemDetail = () => {
                   <Separator />
 
                   <div>
-                    <span className="text-muted-foreground">Care Instructions:</span>
-                    <span className="ml-2 font-medium">{item.careInstructions}</span>
+                    <span className="text-muted-foreground">
+                      Care Instructions:
+                    </span>
+                    <span className="ml-2 font-medium">
+                      {item.careInstructions}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -293,7 +337,7 @@ const ItemDetail = () => {
               <div>
                 <h3 className="font-medium text-foreground mb-3">Tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  {item.tags.map(tag => (
+                  {item.tags.map((tag) => (
                     <Badge key={tag} variant="secondary">
                       {tag}
                     </Badge>
@@ -333,14 +377,19 @@ const ItemDetail = () => {
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={item.uploader.avatar} />
                   <AvatarFallback className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground text-lg">
-                    {item.uploader.name.split(' ').map(n => n[0]).join('')}
+                    {item.uploader.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold">{item.uploader.name}</h3>
+                      <h3 className="text-lg font-semibold">
+                        {item.uploader.name}
+                      </h3>
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                         <div className="flex items-center">
                           <MapPin className="h-4 w-4 mr-1" />
@@ -352,22 +401,37 @@ const ItemDetail = () => {
                         </div>
                       </div>
                     </div>
-                    <Button variant="outline">
-                      <MessageCircle className="mr-2 h-4 w-4" />
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (user) {
+                          setShowChat(true);
+                        } else {
+                          alert("Please log in to contact the owner.");
+                        }
+                      }}
+                    >
+                      <MessageCircle className="mr-2 h-5 w-5" />
                       Contact
                     </Button>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
                     <div>
-                      <span className="text-muted-foreground">Total Swaps:</span>
-                      <span className="ml-2 font-medium">{item.uploader.totalSwaps}</span>
+                      <span className="text-muted-foreground">
+                        Total Swaps:
+                      </span>
+                      <span className="ml-2 font-medium">
+                        {item.uploader.totalSwaps}
+                      </span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-muted-foreground">Rating:</span>
                       <div className="flex items-center ml-2">
                         <Star className="h-4 w-4 text-yellow-500 fill-current mr-1" />
-                        <span className="font-medium">{item.uploader.rating}</span>
+                        <span className="font-medium">
+                          {item.uploader.rating}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -377,6 +441,12 @@ const ItemDetail = () => {
           </Card>
         </div>
       </div>
+      {user && showChat && (
+        <ChatWindow
+          recipient={item.uploader.name}
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </div>
   );
 };

@@ -1,8 +1,10 @@
+// src/firebase/firebase.ts
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+// Optional: Only import analytics in browser environments
+// import { getAnalytics, isSupported } from "firebase/analytics"; // Uncomment only if you're using analytics in the browser
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -14,9 +16,17 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Optional: Analytics (only if you need it and are in browser context)
+// let analytics;
+// if (typeof window !== "undefined") {
+//   isSupported().then((yes) => {
+//     if (yes) analytics = getAnalytics(app);
+//   });
+// }
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+// export { analytics };
