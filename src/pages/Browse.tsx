@@ -4,21 +4,37 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Search, 
-  Filter, 
-  Heart, 
-  Star, 
-  RefreshCw, 
-  Grid3X3, 
+import {
+  Search,
+  Filter,
+  Heart,
+  Star,
+  RefreshCw,
+  Grid3X3,
   List,
   SlidersHorizontal
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import featuredItem1 from "@/assets/featured-item-1.jpg";
-import featuredItem2 from "@/assets/featured-item-2.jpg";
-import featuredItem3 from "@/assets/featured-item-3.jpg";
+
+import { useQuery } from "@tanstack/react-query";
+import { db } from "@/firebase/config"
+import { collection, getDocs, query, where } from "firebase/firestore"
+
+type Item = {
+  id: string;
+  title: string;
+  image?: string;
+  uploader: string;
+  condition: string;
+  points: number;
+  category: string;
+  size: string;
+  likes: number;
+  location: string;
+  uploadDate: string;
+};
+
 
 const Browse = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -28,87 +44,38 @@ const Browse = () => {
   const [selectedCondition, setSelectedCondition] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  // Mock items data
-  const items = [
-    {
-      id: 1,
-      title: "Vintage Denim Jacket",
-      image: featuredItem1,
-      uploader: "Sarah M.",
-      condition: "Excellent",
-      points: 45,
-      category: "Outerwear",
-      size: "M",
-      likes: 23,
-      location: "New York",
-      uploadDate: "2 days ago"
-    },
-    {
-      id: 2,
-      title: "Elegant Cream Dress",
-      image: featuredItem2,
-      uploader: "Emma L.",
-      condition: "Like New",
-      points: 35,
-      category: "Dresses",
-      size: "S",
-      likes: 31,
-      location: "Los Angeles",
-      uploadDate: "1 week ago"
-    },
-    {
-      id: 3,
-      title: "Cozy Knit Sweater",
-      image: featuredItem3,
-      uploader: "Maya K.",
-      condition: "Good",
-      points: 25,
-      category: "Tops",
-      size: "L",
-      likes: 18,
-      location: "Chicago",
-      uploadDate: "3 days ago"
-    },
-    {
-      id: 4,
-      title: "Designer Handbag",
-      image: featuredItem1,
-      uploader: "Sophie R.",
-      condition: "Excellent",
-      points: 65,
-      category: "Accessories",
-      size: "One Size",
-      likes: 42,
-      location: "Miami",
-      uploadDate: "5 days ago"
-    },
-    {
-      id: 5,
-      title: "Summer Floral Blouse",
-      image: featuredItem2,
-      uploader: "Jessica T.",
-      condition: "Like New",
-      points: 30,
-      category: "Tops",
-      size: "M",
-      likes: 19,
-      location: "Seattle",
-      uploadDate: "1 day ago"
-    },
-    {
-      id: 6,
-      title: "Black Leather Boots",
-      image: featuredItem3,
-      uploader: "Alex P.",
-      condition: "Good",
-      points: 40,
-      category: "Shoes",
-      size: "8",
-      likes: 27,
-      location: "Portland",
-      uploadDate: "4 days ago"
-    }
-  ];
+  const fetchItemsFromFirestore = async (): Promise<Item[]> => {
+    const q = query(
+      collection(db, "items"),
+      where("isApproved", "==", true),
+      where("status", "==", "available")
+    );
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        title: data.title ?? "Untitled",
+        uploader: data.uploader ?? "Anonymous",
+        condition: data.condition ?? "Unknown",
+        points: data.points ?? 0,
+        category: data.category ?? "Misc",
+        size: data.size ?? "One Size",
+        likes: data.likes ?? 0,
+        image: data.image, 
+        location: data.location ?? "",
+        uploadDate: data.uploadDate ?? ""
+      };
+    });
+  };
+
+
+  const { data: items = [], isLoading, isError } = useQuery<Item[]>({
+    queryKey: ["items"],
+    queryFn: fetchItemsFromFirestore,
+  });
+
 
   const categories = ["All", "Tops", "Bottoms", "Dresses", "Outerwear", "Shoes", "Accessories"];
   const sizes = ["All", "XS", "S", "M", "L", "XL", "XXL", "One Size"];
@@ -117,7 +84,7 @@ const Browse = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
@@ -233,14 +200,14 @@ const Browse = () => {
           {viewMode === "grid" ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {items.map((item, index) => (
-                <Card 
-                  key={item.id} 
+                <Card
+                  key={item.id}
                   className="group overflow-hidden shadow-soft hover:shadow-hover transition-all duration-300 hover:scale-105 animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="relative">
-                    <img 
-                      src={item.image} 
+                    <img
+                      src={item.image}
                       alt={item.title}
                       className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                     />
@@ -250,9 +217,9 @@ const Browse = () => {
                       </Badge>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="bg-background/80 backdrop-blur-sm hover:bg-background/90 h-8 w-8"
                       >
                         <Heart className="h-4 w-4" />
@@ -264,7 +231,7 @@ const Browse = () => {
                       <h3 className="font-semibold text-foreground line-clamp-1">{item.title}</h3>
                       <p className="text-sm text-muted-foreground">by {item.uploader}</p>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <Badge variant="outline" className="text-xs">{item.category}</Badge>
                       <Badge variant="outline" className="text-xs">Size {item.size}</Badge>
@@ -294,15 +261,15 @@ const Browse = () => {
           ) : (
             <div className="space-y-4">
               {items.map((item, index) => (
-                <Card 
-                  key={item.id} 
+                <Card
+                  key={item.id}
                   className="hover:shadow-hover transition-all duration-300 animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-6">
-                      <img 
-                        src={item.image} 
+                      <img
+                        src={item.image}
                         alt={item.title}
                         className="w-24 h-24 object-cover rounded-lg"
                       />
@@ -316,7 +283,7 @@ const Browse = () => {
                             <Heart className="h-4 w-4" />
                           </Button>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <Badge variant="secondary">{item.condition}</Badge>
                           <Badge variant="outline">{item.category}</Badge>
