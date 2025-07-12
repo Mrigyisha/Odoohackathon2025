@@ -1,4 +1,5 @@
 import { Upload, Search, RefreshCw, Star } from "lucide-react";
+import { Link } from "react-router-dom"; // ✅ Import Link
 
 const steps = [
   {
@@ -90,12 +91,18 @@ const HowItWorks = () => {
             Ready to start your sustainable fashion journey?
           </h3>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:shadow-glow transform hover:scale-105 transition-all duration-300">
+            <Link
+              to="/signup"
+              className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:shadow-glow transform hover:scale-105 transition-all duration-300 text-center"
+            >
               Join ReVibe Today
-            </button>
-            <button className="bg-card text-foreground border border-border px-8 py-3 rounded-lg font-medium hover:bg-accent transition-colors duration-300">
+            </Link>
+            <Link
+              to="/about"
+              className="bg-card text-foreground border border-border px-8 py-3 rounded-lg font-medium hover:bg-accent transition-colors duration-300 text-center"
+            >
               Learn More
-            </button>
+            </Link>
           </div>
         </div>
       </div>

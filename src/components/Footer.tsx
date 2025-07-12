@@ -75,14 +75,15 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Made with Love */}
-        <div className="border-t border-border mt-10 pt-6 flex flex-col md:flex-row justify-between items-center text-muted-foreground">
-          <div className="flex items-center space-x-1">
+        <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-sm text-muted-foreground">
+            © 2025 ReVibe. All rights reserved.
+          </p>
+          <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-4 md:mt-0">
             <span>Made with</span>
             <Heart className="h-4 w-4 text-red-500 fill-current" />
-            <span>by Team ReVibe</span>
+            <span>for sustainable fashion</span>
           </div>
-          <p className="mt-3 md:mt-0">© 2025 ReVibe</p>
         </div>
       </div>
     </footer>

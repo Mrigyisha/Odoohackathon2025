@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Star, RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom"; // ✅ Add this line
 import featuredItem1 from "@/assets/featured-item-1.jpg";
 import featuredItem2 from "@/assets/featured-item-2.jpg";
 import featuredItem3 from "@/assets/featured-item-3.jpg";
@@ -122,9 +123,12 @@ const FeaturedItems = () => {
 
         {/* View More */}
         <div className="text-center">
-          <Button variant="outline" size="lg">
+          <Link
+            to="/browse"
+            className="inline-block px-6 py-3 border border-border rounded-lg text-foreground hover:bg-accent transition-colors duration-300 text-lg font-medium"
+          >
             View All Items
-          </Button>
+          </Link>
         </div>
       </div>
     </section>
