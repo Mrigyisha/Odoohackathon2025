@@ -42,10 +42,10 @@ const Admin = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user);
-        // 👇 Replace this with your Gmail (or more if needed)
-        const allowedAdmins = [gmail];
+        
+        const allowedAdmins = [gmail??""];
 
-        if (!allowedAdmins.includes(user.email)) {
+        if (!allowedAdmins.includes(user.email||"")) {
           alert("Access denied. Admins only.");
           navigate("/"); // redirect to homepage
         }
